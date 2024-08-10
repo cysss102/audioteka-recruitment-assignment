@@ -16,14 +16,17 @@ services:
       context: ./docker/php
     volumes:
       - '.:/app'
+      - './docker/php/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini'
     restart: on-failure
     environment:
       - 'COMPOSER_HOME=/tmp/composer'
       - 'COMPOSER_ALLOW_SUPERUSER=1'
-      - 'XDEBUG_MODE=develop,debug'
+      - 'PHP_IDE_CONFIG=serverName=audioteka.local'
     user: "${DOCKER_USER_ID:-1000}:${DOCKER_GROUP_ID:-1000}"
     depends_on:
       - database
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   worker:
     build:
