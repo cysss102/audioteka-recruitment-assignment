@@ -3,8 +3,10 @@
 namespace App\Repository;
 
 use App\Entity\Product;
+use App\Exception\CartIsFullException;
 use App\Service\Cart\Cart;
 use App\Service\Cart\CartService;
+use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\EntityManagerInterface;
 use Ramsey\Uuid\Uuid;
 
@@ -14,13 +16,35 @@ class CartRepository implements CartService
 
     public function addProduct(string $cartId, string $productId): void
     {
-        $cart    = $this->entityManager->find(\App\Entity\Cart::class, $cartId);
-        $product = $this->entityManager->find(Product::class, $productId);
+        $this->entityManager->beginTransaction();
+        try {
+            $cart    = $this->entityManager->find(\App\Entity\Cart::class, $cartId, LockMode::PESSIMISTIC_WRITE);
+            $product = $this->entityManager->find(Product::class, $productId);
 
-        if ($cart && $product) {
+            if (null === $cart || null === $product) {
+                throw new \InvalidArgumentException(
+                    sprintf(
+                        'Cart (%s) or Product (%s) not found',
+                        $cartId,
+                        $productId
+                    )
+                );
+            }
+
+            if ($cart->isFull()) {
+                throw new CartIsFullException();
+            }
+
             $cart->addProduct($product);
+
             $this->entityManager->persist($cart);
             $this->entityManager->flush();
+
+            $this->entityManager->commit();
+        } catch (\Exception $exception) {
+            $this->entityManager->rollback();
+
+            throw $exception;
         }
     }
 
