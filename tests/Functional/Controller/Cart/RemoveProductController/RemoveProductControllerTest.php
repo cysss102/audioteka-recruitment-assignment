@@ -24,6 +24,18 @@ class RemoveProductControllerTest extends WebTestCase
         self::assertCount(0, $response['products']);
     }
 
+    public function test_decrease_product_from_cart(): void
+    {
+        $this->client->request('DELETE', '/cart/4a41e626-21ca-47f7-b70a-9a189f9907f5/81cccda0-2c7b-4108-8e50-8867e5312e05');
+        self::assertResponseStatusCodeSame(202);
+
+        $this->client->request('GET', '/cart/4a41e626-21ca-47f7-b70a-9a189f9907f5');
+        self::assertResponseStatusCodeSame(200);
+        $response = $this->getJsonResponse();
+        self::assertCount(1, $response['products']);
+        self::assertEquals(1, $response['products'][0]['quantity']);
+    }
+
     public function test_ignores_request_if_product_is_not_in_cart(): void
     {
         $this->client->request('DELETE', '/cart/97e385fe-9876-45fc-baa0-4f2f0df90950/7bcf6fe9-e831-4776-a9df-76a702233adc');

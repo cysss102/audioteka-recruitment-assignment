@@ -22,6 +22,14 @@ class RemoveProductControllerFixture extends AbstractFixture
         $cart->addProduct($product);
         $manager->persist($cart);
 
+        $product3 = new Product('81cccda0-2c7b-4108-8e50-8867e5312e05', 'Product 3', 3990);
+        $manager->persist($product3);
+
+        $cart2 = new Cart('4a41e626-21ca-47f7-b70a-9a189f9907f5');
+        $cart2->addProduct($product3);
+        $cart2->addProduct($product3);
+        $manager->persist($cart2);
+
         $manager->flush();
     }
 }

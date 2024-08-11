@@ -12,5 +12,5 @@ interface Cart
     /**
      * @return Product[]
      */
-    public function getProducts(): iterable;
+    public function getCartProduct(): iterable;
 }

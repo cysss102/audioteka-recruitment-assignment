@@ -32,6 +32,12 @@ class AddProductControllerFixture extends AbstractFixture
         $fullCart->addProduct($products[2]);
         $manager->persist($fullCart);
 
+        $productIncrease = new Product('81cccda0-2c7b-4108-8e50-8867e5312e05', 'Product 3', 3990);
+        $manager->persist($productIncrease);
+
+        $cartIncrease = new Cart('4a41e626-21ca-47f7-b70a-9a189f9907f5');
+        $manager->persist($cartIncrease);
+
         $manager->flush();
     }
 }

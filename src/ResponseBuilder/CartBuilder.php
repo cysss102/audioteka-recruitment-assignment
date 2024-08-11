@@ -13,11 +13,13 @@ class CartBuilder
             'products' => []
         ];
 
-        foreach ($cart->getProducts() as $product) {
+        foreach ($cart->getCartProduct() as $productCart) {
+            $product = $productCart->getProduct();
             $data['products'][] = [
                 'id' => $product->getId(),
                 'name' => $product->getName(),
-                'price' => $product->getPrice()
+                'price' => $product->getPrice(),
+                'quantity' => $productCart->getQuantity(),
             ];
         }
 
