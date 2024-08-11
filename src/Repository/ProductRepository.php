@@ -21,6 +21,7 @@ class ProductRepository implements ProductProvider, ProductService
     public function getProducts(int $page = 0, int $count = 3): iterable
     {
         return $this->repository->createQueryBuilder('p')
+            ->orderBy('p.createdAt', 'DESC')
             ->setMaxResults($count)
             ->setFirstResult($page * $count)
             ->getQuery()
