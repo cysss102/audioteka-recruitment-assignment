@@ -49,4 +49,15 @@ class Product implements \App\Service\Catalog\Product
     {
         return $this->createdAt;
     }
+
+    public function modifyProduct(?string $name, ?int $price): void
+    {
+        if (null !== $name) {
+            $this->name = $name;
+        }
+
+        if (null !== $price) {
+            $this->priceAmount = $price;
+        }
+    }
 }

@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Service\Catalog\Product;
 use App\Service\Catalog\ProductProvider;
 use App\Service\Catalog\ProductService;
+use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Ramsey\Uuid\Uuid;
@@ -55,6 +56,24 @@ class ProductRepository implements ProductProvider, ProductService
         if ($product !== null) {
             $this->entityManager->remove($product);
             $this->entityManager->flush();
+        }
+    }
+
+    public function edit(string $productId, ?string $name, ?int $price): void
+    {
+        $this->entityManager->beginTransaction();
+        try {
+            $product = $this->entityManager->find(\App\Entity\Product::class, $productId, LockMode::PESSIMISTIC_WRITE);
+            if (null !== $product) {
+                $product->modifyProduct($name, $price);
+                $this->entityManager->flush();
+            }
+
+            $this->entityManager->commit();
+        } catch (\Exception $exception) {
+            $this->entityManager->rollback();
+
+            throw $exception;
         }
     }
 }
